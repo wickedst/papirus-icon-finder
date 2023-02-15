@@ -1,10 +1,15 @@
 // npx
-// var finder = require('findit')(process.argv[2] || '.', {followSymlinks: true});
-import * as finder from "findit";
-import path from "path";
-import fs from "fs";
 
-finder(process.argv[2] || ".", { followSymlinks: true });
+const path = require("path");
+const fs = require("fs");
+
+const startDir = "papirus-icon-theme/Papirus/64x64/apps";
+var isWin = process.platform === "win32";
+const deliminator = isWin ? "\\" : "/";
+
+var finder = require("findit")(process.argv[2] || startDir, {
+  followSymlinks: true,
+});
 
 finder.on("directory", function (dir, stat, stop) {
   var base = path.basename(dir);
@@ -12,14 +17,32 @@ finder.on("directory", function (dir, stat, stop) {
   // else console.log(dir + '/')
 });
 
-let icons = [];
+const readIsSvg = (fileData) => {
+  let letter = fileData.charAt(0);
+  return letter === "<";
+};
+
+let icons = {};
+
 //This listens for files found
 finder.on("file", function (file) {
-  const str = file.toString();
-  icons.push(str);
-  // if (str.includes('symbolic')) {
-  // icons.push(str);
-  // }
+  const path = file.toString();
+
+  const data = fs.readFileSync(path, "utf8");
+
+  const isSvg = readIsSvg(data);
+  if (isSvg) {
+    const fileNameWithExtension = path.split(deliminator)[4];
+    let fileName = fileNameWithExtension.split(".")[0];
+
+    console.log(fileName.toString());
+    icons[`${fileName}`] = {
+      path,
+      data,
+    };
+
+    // todo - unescape: https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
+  }
 });
 
 finder.on("end", function () {
