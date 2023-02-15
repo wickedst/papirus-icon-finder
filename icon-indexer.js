@@ -36,9 +36,9 @@ finder.on("file", function (file) {
     let fileName = fileNameWithExtension.split(".")[0];
 
     console.log(fileName.toString());
-    icons[`${fileName}`] = {
+    icons[`${fileName.toLowerCase()}`] = {
       path,
-      data,
+      // data,
     };
 
     // todo - unescape: https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
