@@ -2,6 +2,7 @@
 
 const path = require("path");
 const fs = require("fs");
+const isSvg = require("is-svg");
 
 const startDir = "papirus-icon-theme/Papirus/64x64/apps";
 var isWin = process.platform === "win32";
@@ -30,8 +31,8 @@ finder.on("file", function (file) {
 
   const data = fs.readFileSync(path, "utf8");
 
-  const isSvg = readIsSvg(data);
-  if (isSvg) {
+  // const isSvg = isSvg(data);
+  if (isSvg(data)) {
     const fileNameWithExtension = path.split(deliminator)[4];
     let fileName = fileNameWithExtension.split(".")[0];
 

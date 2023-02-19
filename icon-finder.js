@@ -1,6 +1,6 @@
 const { findBestMatch } = require("string-similarity");
-const { readFileSync, readFile } = require("fs");
-// import isSvg from "is-svg";
+const fs = require("fs");
+const { readFileSync, readFile } = fs;
 
 let rawdata = readFileSync("icons.json");
 let icons = JSON.parse(rawdata);
@@ -25,25 +25,20 @@ let str = process.argv[2];
 str = str.toLowerCase();
 
 if (str) {
-  // console.log(Object.keys(icons).reverse());
-  const results = findIcon(str);
-  console.log(results);
-  const bestMatch = results.bestMatch.target;
-  console.log(bestMatch);
+  const { ratings, bestMatch } = findIcon(str);
+  if (!bestMatch) return;
 
-  // // check if the file is a real svg
-  // readModuleFile(`./${bestMatch}`, function (err, result) {
-  //   if (isSvg(result)) {
-  //     console.log(true);
-  //     console.log(bestMatch); // svg path
-  //     return bestMatch;
-  //   } else {
-  //     console.log(false);
-  //     var hopefullySvg = findIcon(result);
-  //     console.log(hopefullySvg.bestMatch.target); // svg path
-  //     return hopefullySvg.bestMatch.target;
-  //   }
-  // });
+  const { target, rating } = bestMatch;
+
+  const icon = icons[target];
+
+  if (!icon) return;
+
+  const { path } = icon;
+  const data = fs.readFileSync(path.toString(), "utf8");
+
+  console.log(icon);
+  console.log(data);
 } else {
   console.log("Please enter a search term");
 }
